@@ -1,19 +1,21 @@
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.Random;
 
 public class Zavodnik extends Thread {
 
+    private static final Logger logger = LoggerFactory.getLogger(Zavodnik.class);
+
     private String jmeno;
     private SkladSusenek sklad;
-    private Logger logger;
     private Random random = new Random();
 
     private int kolaKeSplneni = 3;
     private int odbehlaKola = 0;
 
-    public Zavodnik(String jmeno, SkladSusenek sklad, Logger logger) {
+    public Zavodnik(String jmeno, SkladSusenek sklad) {
         this.jmeno = jmeno;
         this.sklad = sklad;
-        this.logger = logger;
     }
 
     public int getOdbehlaKola() {
@@ -33,7 +35,7 @@ public class Zavodnik extends Thread {
 
             int hod = random.nextInt(6) + 1;
 
-            logger.log(jmeno + " kolo " + odbehlaKola + " hodil: " + hod);
+            logger.info("{} kolo {} hodil: {}", jmeno, odbehlaKola, hod);
 
             try {
 
@@ -43,22 +45,22 @@ public class Zavodnik extends Thread {
                         if (!sklad.snedSusenku(jmeno)) {
                             return;
                         }
-                        logger.log(jmeno + " odpočívá 3 sekundy.");
+                        logger.info("{} odpočívá 3 sekundy.", jmeno);
                         Thread.sleep(3000);
                         break;
 
                     case 2:
                         kolaKeSplneni++;
-                        logger.log(jmeno + " musí běžet jedno kolo navíc.");
+                        logger.info("{} musí běžet jedno kolo navíc.", jmeno);
                         break;
 
                     case 3:
-                        logger.log(jmeno + " čeká 5 sekund.");
+                        logger.info("{} čeká 5 sekund.", jmeno);
                         Thread.sleep(5000);
                         break;
 
                     case 4:
-                        logger.log(jmeno + " čeká 2 sekundy.");
+                        logger.info("{} čeká 2 sekundy.", jmeno);
                         Thread.sleep(2000);
                         break;
 
@@ -67,17 +69,17 @@ public class Zavodnik extends Thread {
                         break;
 
                     case 6:
-                        logger.log(jmeno + " pokračuje bez akce.");
+                        logger.info("{} pokračuje bez akce.", jmeno);
                         break;
                 }
 
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                logger.error("Chyba ve vlákně {}", jmeno, e);
             }
         }
 
         if (!sklad.jeKonec()) {
-            logger.log(jmeno + " dokončil závod.");
+            logger.info("{} dokončil závod.", jmeno);
         }
     }
 }

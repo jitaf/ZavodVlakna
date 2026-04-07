@@ -1,11 +1,14 @@
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class Zavod {
 
     private static final int POCET_ZAVODNIKU = 4;
+    private static final Logger logger = LoggerFactory.getLogger(Zavod.class);
 
     public static void main(String[] args) {
 
-        Logger logger = new Logger();
-        SkladSusenek sklad = new SkladSusenek(2, logger);
+        SkladSusenek sklad = new SkladSusenek(2);
 
         Zavodnik[] zavodnici = new Zavodnik[POCET_ZAVODNIKU];
 
@@ -13,8 +16,7 @@ public class Zavod {
 
             zavodnici[i] = new Zavodnik(
                     "Závodník " + (i + 1),
-                    sklad,
-                    logger
+                    sklad
             );
 
             zavodnici[i].start();
@@ -24,21 +26,17 @@ public class Zavod {
             try {
                 z.join();
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                logger.error("Chyba při join()", e);
             }
         }
 
         if (!sklad.jeKonec()) {
 
-            logger.log("\nZávod skončil.");
-            logger.log("Ve skladu zůstalo sušenek: " + sklad.getSusenky());
+            logger.info("\nZávod skončil.");
+            logger.info("Ve skladu zůstalo sušenek: {}", sklad.getSusenky());
 
             for (Zavodnik z : zavodnici) {
-                logger.log(
-                        z.getJmenoZavodnika()
-                                + " uběhl kol: "
-                                + z.getOdbehlaKola()
-                );
+                logger.info("{} uběhl kol: {}", z.getJmenoZavodnika(), z.getOdbehlaKola());
             }
         }
     }

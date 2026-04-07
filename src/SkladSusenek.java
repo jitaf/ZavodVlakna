@@ -1,30 +1,33 @@
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class SkladSusenek {
+
+    private static final Logger logger = LoggerFactory.getLogger(SkladSusenek.class);
 
     private int susenky;
     private boolean konec = false;
-    private Logger logger;
 
-    public SkladSusenek(int susenky, Logger logger) {
+    public SkladSusenek(int susenky) {
         this.susenky = susenky;
-        this.logger = logger;
     }
 
     public synchronized boolean snedSusenku(String zavodnik) {
 
         if (susenky <= 0) {
-            logger.log("Nejsme na závodě jedlíků, běžte běhat do lesa.");
+            logger.error("Nejsme na závodě jedlíků, běžte běhat do lesa.");
             konec = true;
             return false;
         }
 
         susenky--;
-        logger.log(zavodnik + " snědl sušenku. Ve skladu zbývá " + susenky);
+        logger.info("{} snědl sušenku. Ve skladu zbývá {}", zavodnik, susenky);
         return true;
     }
 
     public synchronized void pridejSusenku(String zavodnik) {
         susenky++;
-        logger.log(zavodnik + " přidal sušenku do skladu. Ve skladu je " + susenky);
+        logger.info("{} přidal sušenku. Ve skladu je {}", zavodnik, susenky);
     }
 
     public synchronized boolean jeKonec() {
